@@ -518,6 +518,14 @@
    Example: const SOLD_OUT=['Cuban Link Steel Bracelet','MZ-RG-002'];  (nam ba product code, duto-i cholbe)
    Abar stock ashle nam ta list theke muche dao. */
 const SOLD_OUT=[];
+/* ============ PRE-ORDER / SALE / DISCOUNT ============
+   PRE_ORDER: product code likho — ei product gulo te "Pre-Order" badge ar Pre-Order button dekhabe.
+   SALE: product code likho — ei product gulo available, "Sale" badge dekhabe.
+   DISCOUNT: 'product code':percent (50 = 50% off). Price auto kome jabe, ager price kete dekhabe.
+   Example: const DISCOUNT={'MZ-CP-001':50}; */
+const PRE_ORDER=['MZ-BR-017','MZ-BR-018','MZ-NK-001'];
+const SALE=['MZ-BR-001','MZ-BR-002','MZ-BR-003','MZ-BR-004','MZ-BR-005','MZ-BR-006','MZ-BR-007','MZ-BR-008','MZ-BR-009','MZ-BR-010','MZ-BR-011','MZ-BR-012','MZ-BR-013','MZ-BR-014','MZ-BR-015','MZ-BR-016','MZ-NK-002','MZ-NK-003','MZ-NK-004','MZ-CP-001','MZ-CP-002','MZ-CP-003','MZ-CP-004'];
+const DISCOUNT={'MZ-CP-001':50,'MZ-CP-002':50,'MZ-CP-003':50,'MZ-CP-004':50};
 /* ============ MESSENGER ============
    Facebook page er username (page link e m.me/XXXX er XXXX). Khali thakle Facebook page khole.
    Example: const MESSENGER_USER='menzobd'; */
@@ -1186,6 +1194,12 @@ const MESSENGER_USER='';
 .sold-badge{position:absolute;top:12px;left:12px;z-index:3;background:#050506;color:var(--gold-bright);border:1px solid var(--gold-line);font-size:11px;letter-spacing:.16em;text-transform:uppercase;padding:6px 12px;font-weight:600}
 .np-card.sold .np-btn{background:#23242a;color:#8a8d94;cursor:not-allowed}
 .np-sku{font-size:10px;letter-spacing:.18em;color:var(--chrome-dim);text-transform:uppercase;margin-bottom:6px}
+.tag-badge{position:absolute;top:12px;left:12px;z-index:3;background:var(--gold);color:var(--black);font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:6px 12px;font-weight:600}
+.tag-badge.pre{background:#050506;color:var(--gold-bright);border:1px solid var(--gold-line)}
+.np-was{font-size:12px;color:var(--chrome-dim);margin:-8px 0 12px}.np-was s{opacity:.85}.np-was b{color:var(--gold-bright);font-weight:600;letter-spacing:.08em;margin-left:4px}
+@media(max-width:560px){.np-was{margin:-4px 0 10px;font-size:11px}.tag-badge{top:8px;left:8px;font-size:10px;padding:5px 9px}}
+.mzwas{color:var(--chrome-dim);font-size:15px;margin-left:8px;text-decoration:line-through}.mzoff{font-size:12px;letter-spacing:.12em;color:var(--gold-bright);margin-left:8px}
+.mzst{display:inline-block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;padding:5px 11px;background:var(--gold);color:var(--black);font-weight:600;margin-bottom:6px}.mzst.pre{background:none;color:var(--gold-bright);border:1px solid var(--gold-line)}
 .mzalt{display:flex;gap:8px}.mzalt .mzbtn{flex:1;margin-top:0;padding:12px 4px;letter-spacing:.1em;text-align:center;text-decoration:none;display:block;font-size:11px}
 .mzbtn[disabled]{opacity:.45;cursor:not-allowed}
 .mzov{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;z-index:300;align-items:center;justify-content:center;padding:18px}
@@ -1231,28 +1245,33 @@ cards.forEach(x=>{const f=e=>{e.stopPropagation();go(x.d.id)};x.el.addEventListe
 const isSold=x=>SOLD_OUT.includes(x.n)||SOLD_OUT.includes(x.d.id)||(x.d.sku&&SOLD_OUT.includes(x.d.sku));
 cards.forEach(x=>{if(x.d.sku)x.el.querySelector('h3').insertAdjacentHTML('beforebegin','<div class="np-sku">'+x.d.sku+'</div>')});
 cards.forEach(x=>{if(isSold(x)){x.el.classList.add('sold');x.el.querySelector('.np-img').insertAdjacentHTML('beforeend','<span class="sold-badge">Sold Out</span>');const b=x.el.querySelector('[data-add]');b.textContent='Sold Out'}});
-cart=cart.filter(c=>{const x=cards.find(y=>y.n===c.n);return x&&!isSold(x)});
+const has=(L,x)=>L.includes(x.n)||L.includes(x.d.id)||!!(x.d.sku&&L.includes(x.d.sku));
+const isPre=x=>has(PRE_ORDER,x);
+cards.forEach(x=>{x.was=0;x.off=0;const g=DISCOUNT[x.d.sku]||DISCOUNT[x.n]||DISCOUNT[x.d.id]||0;if(g&&!isSold(x)){x.was=x.p;x.p=Math.round(x.p*(100-g)/100);x.off=g;const pe=x.el.querySelector('.np-price');pe.textContent=tk(x.p);pe.insertAdjacentHTML('afterend','<div class="np-was"><s>'+tk(x.was)+'</s><b>'+g+'% OFF</b></div>')}});
+const lbl=x=>isSold(x)?'':isPre(x)?'Pre-Order':(has(SALE,x)||x.off)?'Sale'+(x.off?' · '+x.off+'% Off':''):'';
+cards.forEach(x=>{const t=lbl(x);if(!t)return;x.el.querySelector('.np-img').insertAdjacentHTML('beforeend','<span class="tag-badge'+(isPre(x)?' pre':'')+'">'+t+'</span>');if(isPre(x))x.el.querySelector('[data-add]').textContent='Pre-Order'});
+cart=cart.filter(c=>{const x=cards.find(y=>y.n===c.n);if(x&&!isSold(x)){c.p=x.p;c.pre=isPre(x);return true}return false});
 let sz='';
 function showP(x){sz=x.d.s[0];
 const sug=[...cards.filter(y=>y!==x&&!isSold(y)&&y.d.c==x.d.c),...cards.filter(y=>y!==x&&!isSold(y)&&y.d.c!=x.d.c)].slice(0,4);
 $q('mzPg').innerHTML=`<div class="mzbar"><button class="mzx" onclick="closeP()">← Back</button><b>MENZO BD</b><button class="mzx" onclick="openCart()">Cart (<span class="mzcn">${cart.length}</span>)</button></div>
-<div class="mzin"><div class="mzmain"><img src="${x.i}" alt="${x.n}"><div><span class="eyebrow">${x.d.c||'MENZO BD'}</span><h1>${x.n}</h1>${x.d.sku?`<div class="np-sku" style="margin-bottom:6px">Code: ${x.d.sku}</div>`:''}<div class="mzpr">${tk(x.p)}</div><p>${x.d.b}</p><p style="margin-top:8px">Material: ${x.d.m}</p>
+<div class="mzin"><div class="mzmain"><img src="${x.i}" alt="${x.n}"><div><span class="eyebrow">${x.d.c||'MENZO BD'}</span><h1>${x.n}</h1>${x.d.sku?`<div class="np-sku" style="margin-bottom:6px">Code: ${x.d.sku}</div>`:''}${lbl(x)?`<div class="mzst${isPre(x)?' pre':''}">${lbl(x)}</div>`:''}<div class="mzpr">${tk(x.p)}${x.was?`<span class="mzwas">${tk(x.was)}</span><span class="mzoff">${x.off}% OFF</span>`:''}</div><p>${x.d.b}</p><p style="margin-top:8px">Material: ${x.d.m}</p>
 <div style="margin-top:20px;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-dim)">Size</div><div class="mzsz">${x.d.s.map((z,i)=>`<button class="${i?'':'on'}" onclick="pick(this,'${z}')">${z}</button>`).join('')}</div>
-${isSold(x)?'<button class="mzbtn" disabled>Sold Out</button><p style="margin-top:10px">Ei product ekhon stock e nei. Notun stock er jonno WhatsApp e message koro.</p>':`<button class="mzbtn" onclick="addP('${x.d.id}',true)">Order Now</button><button class="mzbtn alt" onclick="addP('${x.d.id}',false)">Add to Cart</button>`}
+${isSold(x)?'<button class="mzbtn" disabled>Sold Out</button><p style="margin-top:10px">Ei product ekhon stock e nei. Notun stock er jonno WhatsApp e message koro.</p>':`<button class="mzbtn" onclick="addP('${x.d.id}',true)">${isPre(x)?'Pre-Order Now':'Order Now'}</button><button class="mzbtn alt" onclick="addP('${x.d.id}',false)">${isPre(x)?'Pre-Order (Add to Cart)':'Add to Cart'}</button>${isPre(x)?'<p style="margin-top:10px">Ei product pre-order e ache. Order confirm hole delivery somoy WhatsApp e janiye deowa hobe.</p>':''}`}
 <p style="margin-top:16px">7-day easy exchange · Cash on delivery</p></div></div>
 <h2 class="mzsh">You May Also Like</h2><div class="mzsug">${sug.map(y=>`<div class="mzsc" onclick="go('${y.d.id}')"><img src="${y.i}" alt="${y.n}"><div>${y.n}<em>${tk(y.p)}</em></div></div>`).join('')}</div></div>`;
 $q('mzPg').classList.add('on');$q('mzPg').scrollTop=0;document.body.style.overflow='hidden'}
 function pick(b,z){sz=z;b.parentNode.querySelectorAll('button').forEach(e=>e.classList.remove('on'));b.classList.add('on')}
-function addP(id,now){const x=by[id];if(isSold(x))return;cart.push({n:x.n,k:x.d.sku||'',p:x.p,i:x.i,s:sz});save();if(now)openCart();else{const b=event.target;b.textContent='Added ✓';setTimeout(()=>b.textContent='Add to Cart',1200)}}
+function addP(id,now){const x=by[id];if(isSold(x))return;cart.push({n:x.n,k:x.d.sku||'',p:x.p,i:x.i,s:sz,pre:isPre(x)});save();if(now)openCart();else{const b=event.target,o=b.textContent;b.textContent='Added ✓';setTimeout(()=>b.textContent=o,1200)}}
 function hideP(){$q('mzPg').classList.remove('on');document.body.style.overflow=''}
 function closeP(){if(nav)history.back();else location.hash=''}
 function route(){const m=location.hash.match(/^#\/p\/(.+)$/);if(m&&by[m[1]])showP(by[m[1]]);else hideP()}
 addEventListener('hashchange',route);
-function drawC(){const t=cart.reduce((a,c)=>a+c.p,0);$q('mzCB').innerHTML=`<button class="mzx mzclose" aria-label="Close cart" onclick="closeCart()">✕</button><h3>Your Cart</h3>`+(cart.length?cart.map((c,i)=>`<div class="mzrow"><img src="${c.i}"><span>${c.n}<br><small>${c.k?c.k+' · ':''}${c.s} · ${tk(c.p)}</small></span><button class="mzx" onclick="cart.splice(${i},1);save();drawC()">✕</button></div>`).join('')+`<p style="margin:14px 0;color:var(--ink)">Total: <b>${tk(t)}</b></p><p style="margin:-6px 0 10px"><small>Cash on delivery. Delivery is free inside Dhaka on orders over ৳2000; otherwise the delivery charge is confirmed with you before we send.</small></p><input id="mzN" placeholder="Full name"><input id="mzT" placeholder="Phone"><textarea id="mzD" rows="2" placeholder="Delivery address"></textarea><button class="mzbtn" onclick="order(${t})">Place Order</button><p style="text-align:center;margin:16px 0 6px"><small>No WhatsApp? Order another way:</small></p><div class="mzalt"><a class="mzbtn alt" href="tel:+8801950743577">Call</a><button class="mzbtn alt" onclick="orderSms()">SMS</button><button class="mzbtn alt" onclick="orderCopy(this)">Copy Order</button></div>`:'<p>Your cart is empty.</p>')}
+function drawC(){const t=cart.reduce((a,c)=>a+c.p,0);$q('mzCB').innerHTML=`<button class="mzx mzclose" aria-label="Close cart" onclick="closeCart()">✕</button><h3>Your Cart</h3>`+(cart.length?cart.map((c,i)=>`<div class="mzrow"><img src="${c.i}"><span>${c.n}<br><small>${c.k?c.k+' · ':''}${c.s} · ${tk(c.p)}${c.pre?' · Pre-Order':''}</small></span><button class="mzx" onclick="cart.splice(${i},1);save();drawC()">✕</button></div>`).join('')+`<p style="margin:14px 0;color:var(--ink)">Total: <b>${tk(t)}</b></p><p style="margin:-6px 0 10px"><small>Cash on delivery. Delivery is free inside Dhaka on orders over ৳2000; otherwise the delivery charge is confirmed with you before we send.</small></p><input id="mzN" placeholder="Full name"><input id="mzT" placeholder="Phone"><textarea id="mzD" rows="2" placeholder="Delivery address"></textarea><button class="mzbtn" onclick="order(${t})">Place Order</button><p style="text-align:center;margin:16px 0 6px"><small>No WhatsApp? Order another way:</small></p><div class="mzalt"><a class="mzbtn alt" href="tel:+8801950743577">Call</a><button class="mzbtn alt" onclick="orderSms()">SMS</button><button class="mzbtn alt" onclick="orderCopy(this)">Copy Order</button></div>`:'<p>Your cart is empty.</p>')}
 function openCart(){drawC();$q('mzC').classList.add('on')}
 function mzMsg(){const n=$q('mzN').value.trim(),ph=$q('mzT').value.trim(),ad=$q('mzD').value.trim();if(!n||!ph||!ad){alert('Please fill name, phone and address.');return null}
 const t=cart.reduce((a,c)=>a+c.p,0);
-return 'New order — MENZO BD\n'+cart.map(c=>`• ${c.n}${c.k?' ['+c.k+']':''} (${c.s}) ${tk(c.p)}`).join('\n')+`\nTotal: ${tk(t)}\nName: ${n}\nPhone: ${ph}\nAddress: ${ad}\nDelivery: free inside Dhaka on ৳2000+, otherwise please confirm charge`}
+return 'New order — MENZO BD\n'+cart.map(c=>`• ${c.n}${c.k?' ['+c.k+']':''} (${c.s}) ${tk(c.p)}${c.pre?' [PRE-ORDER]':''}`).join('\n')+`\nTotal: ${tk(t)}\nName: ${n}\nPhone: ${ph}\nAddress: ${ad}\nDelivery: free inside Dhaka on ৳2000+, otherwise please confirm charge`}
 function orderSms(){const m=mzMsg();if(!m)return;location.href='sms:+'+WA+'?&body='+encodeURIComponent(m)}
 function orderCopy(b){const m=mzMsg();if(!m)return;const ok=()=>{b.textContent='Copied ✓';setTimeout(()=>b.textContent='Copy Order',2000);alert('Order copied. Paste it in a message to our Facebook page or send it by SMS to +'+WA+'.')};
 if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(m).then(ok,()=>prompt('Copy this order and send it to us:',m));else prompt('Copy this order and send it to us:',m)}
@@ -1267,7 +1286,7 @@ function info(k){const d=INFO[k];$q('mzCB').innerHTML=`<button class="mzx mzclos
 
 addEventListener('keydown',e=>{if(e.key==='Escape')closeCart()});
 function order(t){const n=$q('mzN').value.trim(),ph=$q('mzT').value.trim(),ad=$q('mzD').value.trim();if(!n||!ph||!ad){alert('Please fill name, phone and address.');return}
-const msg='New order — MENZO BD\n'+cart.map(c=>`• ${c.n}${c.k?' ['+c.k+']':''} (${c.s}) ${tk(c.p)}`).join('\n')+`\nTotal: ${tk(t)}\nName: ${n}\nPhone: ${ph}\nAddress: ${ad}\nDelivery: free inside Dhaka on ৳2000+, otherwise please confirm charge`;
+const msg='New order — MENZO BD\n'+cart.map(c=>`• ${c.n}${c.k?' ['+c.k+']':''} (${c.s}) ${tk(c.p)}${c.pre?' [PRE-ORDER]':''}`).join('\n')+`\nTotal: ${tk(t)}\nName: ${n}\nPhone: ${ph}\nAddress: ${ad}\nDelivery: free inside Dhaka on ৳2000+, otherwise please confirm charge`;
 if(WA)window.open('https://wa.me/'+WA+'?text='+encodeURIComponent(msg));else prompt('Order ready — copy and send:',msg);cart=[];save();$q('mzCB').innerHTML=`<button class="mzx mzclose" aria-label="Close" onclick="closeCart()">✕</button><h3>Order sent ✓</h3><p style="margin:14px 0">WhatsApp e tomar order message khule gese. Send korle ami confirm korbo. Send na hole <a href="https://wa.me/'+WA+'" style="color:var(--gold-bright)">ekhane click kore</a> message pathao.</p><button class="mzbtn" onclick="closeCart()">Continue Shopping</button>`}
 $q('cartBtn').onclick=openCart;
 document.querySelectorAll('.mzov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on')}));
