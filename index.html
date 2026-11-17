@@ -519,12 +519,14 @@ body.entry-locked{overflow:hidden}
 #menzo-entry .entry-brand{position:absolute;left:0;top:0;z-index:3;width:min(46vw,210px);aspect-ratio:400/260;display:grid;place-items:center;filter:drop-shadow(0 0 22px rgba(190,0,20,.18));cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;will-change:transform;outline:none}
 #menzo-entry .entry-brand img{width:100%;height:100%;object-fit:contain;opacity:.95;-webkit-mask-image:radial-gradient(ellipse at center,#000 52%,transparent 74%);mask-image:radial-gradient(ellipse at center,#000 52%,transparent 74%)}
 #menzo-entry .ghost-face{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
-#menzo-entry .gf-eye{transform-box:fill-box;transform-origin:center;animation:gfBlink 4.8s infinite;filter:drop-shadow(0 0 3px rgba(255,255,255,.75))}
-#menzo-entry .gf-pupil{animation:gfLook 3s ease-in-out infinite}
-#menzo-entry .gf-mouth{transform-box:fill-box;transform-origin:50% 0;animation:gfGrin 2.4s ease-in-out infinite}
+#menzo-entry .gf-eye{transform-box:fill-box;transform-origin:center;animation:gfBlink 4.6s infinite}
+#menzo-entry .gf-look{animation:gfLook 3.2s ease-in-out infinite}
+#menzo-entry .gf-brow{transform-box:fill-box;transform-origin:center;animation:gfBrow 2.8s ease-in-out infinite}
+#menzo-entry .gf-tongue{transform-box:fill-box;transform-origin:60% 0;animation:gfTongue 1.3s ease-in-out infinite}
 @keyframes gfBlink{0%,44%,48%,100%{transform:scaleY(1)}46%{transform:scaleY(.08)}}
-@keyframes gfLook{0%,100%{transform:translate(0,0)}35%{transform:translate(4px,.6px)}70%{transform:translate(-3px,-.6px)}}
-@keyframes gfGrin{0%,100%{transform:scale(1,1)}50%{transform:scale(1.07,1.22)}}
+@keyframes gfLook{0%,100%{transform:translate(0,0)}35%{transform:translate(2.6px,.8px)}70%{transform:translate(-2.4px,-.8px)}}
+@keyframes gfBrow{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@keyframes gfTongue{0%,100%{transform:rotate(-4deg) scaleY(1)}50%{transform:rotate(5deg) scaleY(1.1)}}
 #menzo-entry .entry-kicker{font-size:10px;letter-spacing:.42em;color:#999;margin-top:12px}
 #menzo-entry .entry-touch{position:relative;margin-top:42px;padding:14px 24px;border:1px solid rgba(220,220,220,.38);background:rgba(10,10,10,.55);color:#f4f1ed;font:600 12px Manrope,Arial,sans-serif;letter-spacing:.22em;text-transform:uppercase;animation:touchDrift 2.8s ease-in-out infinite alternate;transition:left .35s ease,top .35s ease,transform .2s ease;cursor:pointer}
 #menzo-entry .entry-touch:before{content:"";position:absolute;inset:-7px;border:1px solid rgba(255,255,255,.08);animation:ringPulse 2s ease-out infinite}
@@ -551,11 +553,15 @@ body.entry-locked{overflow:hidden}
   <div class="entry-brand" id="menzoEnter" role="button" tabindex="0" aria-label="Touch the MENZO emblem to enter">
       <img src="menzo-logo.svg" alt="MENZO emblem">
       <svg class="ghost-face" viewBox="0 0 400 260" aria-hidden="true">
-        <g transform="translate(168 119) rotate(19)"><g class="gf-eye"><ellipse rx="14" ry="5.6" fill="#f4f4f1"/><circle class="gf-pupil" r="3.1" fill="#070707"/></g></g>
-        <g transform="translate(232 119) rotate(-19)"><g class="gf-eye"><ellipse rx="14" ry="5.6" fill="#f4f4f1"/><circle class="gf-pupil" r="3.1" fill="#070707"/></g></g>
-        <g class="gf-mouth">
-          <path d="M168 146 Q200 152 232 146 Q200 182 168 146Z" fill="#060606" stroke="#d9dde3" stroke-width="1.2" stroke-linejoin="round"/>
-          <path fill="#f4f4f1" d="M174 147.6 L179 147.9 L177 153Z M183 148.5 L189 149 L186 155Z M193 149.1 L199 149.3 L196 155.5Z M201 149.3 L207 149.1 L204 155.5Z M211 149 L217 148.5 L214 155Z M221 147.9 L226 147.6 L223 153Z"/>
+        <g transform="translate(176 121)"><g class="gf-eye"><ellipse rx="14.5" ry="17.5" fill="#dcebf7" stroke="#ffffff" stroke-width="1"/><g class="gf-look"><ellipse rx="11.5" ry="14.5" fill="#050505"/><circle cx="-3.6" cy="-5.2" r="3.4" fill="#fff"/><circle cx="3.4" cy="3.6" r="1.7" fill="#fff" opacity=".9"/></g></g></g>
+        <g transform="translate(224 121)"><g class="gf-eye"><ellipse rx="14.5" ry="17.5" fill="#dcebf7" stroke="#ffffff" stroke-width="1"/><g class="gf-look"><ellipse rx="11.5" ry="14.5" fill="#050505"/><circle cx="-3.6" cy="-5.2" r="3.4" fill="#fff"/><circle cx="3.4" cy="3.6" r="1.7" fill="#fff" opacity=".9"/></g></g></g>
+        <path class="gf-brow" d="M165 102 Q176 96 187 101" fill="none" stroke="#4d535b" stroke-width="2.2" stroke-linecap="round"/>
+        <path class="gf-brow" d="M213 101 Q224 96 235 102" fill="none" stroke="#4d535b" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M193 147 Q203 150 213 146" fill="none" stroke="#2a2d31" stroke-width="2" stroke-linecap="round"/>
+        <g class="gf-tongue">
+          <path d="M184 150 Q200 147 207 151 Q214 158 203 166 Q191 172 181 165 Q175 157 184 150Z" fill="#e8738c" stroke="#b84a63" stroke-width="1.2" stroke-linejoin="round"/>
+          <path d="M186 158 Q195 160 202 157" fill="none" stroke="#b84a63" stroke-width="1.1" stroke-linecap="round" opacity=".7"/>
+          <ellipse cx="192" cy="155" rx="5" ry="1.8" fill="#fff" opacity=".45" transform="rotate(-14 192 155)"/>
         </g>
       </svg>
     </div>
