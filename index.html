@@ -510,8 +510,58 @@
     .hero-glow, .scroll-cue .line{animation:none !important;}
   }
 </style>
+<style>
+/* MENZO horror entry */
+body.entry-locked{overflow:hidden}
+#menzo-entry{position:fixed;inset:0;z-index:99999;background:radial-gradient(ellipse at 50% 42%,#171719 0%,#080809 48%,#020202 100%);display:flex;align-items:center;justify-content:center;overflow:hidden;opacity:1;visibility:visible;transition:opacity .7s ease,visibility .7s ease}
+#menzo-entry.entry-gone{opacity:0;visibility:hidden;pointer-events:none}
+#menzo-entry .entry-frame{position:absolute;left:0;right:0;bottom:8vh;z-index:1;display:flex;flex-direction:column;align-items:center;text-align:center;pointer-events:none}
+#menzo-entry .entry-brand{position:absolute;left:0;top:0;z-index:3;width:min(46vw,210px);aspect-ratio:400/260;display:grid;place-items:center;filter:drop-shadow(0 0 22px rgba(190,0,20,.18));cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;will-change:transform;outline:none}
+#menzo-entry .entry-brand img{width:100%;height:100%;object-fit:contain;opacity:.95;-webkit-mask-image:radial-gradient(ellipse at center,#000 52%,transparent 74%);mask-image:radial-gradient(ellipse at center,#000 52%,transparent 74%)}
+#menzo-entry .ghost-face{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);width:35%;height:23%;pointer-events:none}
+#menzo-entry .ghost-eye{position:absolute;top:10%;width:24%;height:43%;background:#f4f4f1;border-radius:50%;box-shadow:0 0 12px rgba(255,255,255,.55);animation:eyeBlink 4.8s infinite}
+#menzo-entry .ghost-eye.left{left:19%;transform:rotate(13deg)}
+#menzo-entry .ghost-eye.right{right:19%;transform:rotate(-13deg)}
+#menzo-entry .ghost-eye:after{content:"";position:absolute;width:42%;height:62%;left:35%;top:20%;background:#090909;border-radius:50%;animation:eyeLook 3s ease-in-out infinite}
+#menzo-entry .ghost-mouth{position:absolute;left:50%;top:67%;transform:translateX(-50%);width:18%;height:24%;border-radius:50% 50% 55% 55%;background:#080808;box-shadow:0 0 5px #000;animation:mouthMove 2.2s ease-in-out infinite}
+#menzo-entry .entry-kicker{font-size:10px;letter-spacing:.42em;color:#999;margin-top:12px}
+#menzo-entry .entry-touch{position:relative;margin-top:42px;padding:14px 24px;border:1px solid rgba(220,220,220,.38);background:rgba(10,10,10,.55);color:#f4f1ed;font:600 12px Manrope,Arial,sans-serif;letter-spacing:.22em;text-transform:uppercase;animation:touchDrift 2.8s ease-in-out infinite alternate;transition:left .35s ease,top .35s ease,transform .2s ease;cursor:pointer}
+#menzo-entry .entry-touch:before{content:"";position:absolute;inset:-7px;border:1px solid rgba(255,255,255,.08);animation:ringPulse 2s ease-out infinite}
+#menzo-entry .entry-hint{font-size:9px;letter-spacing:.24em;color:#777;margin-top:18px}
+@keyframes ghostFloat{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-12px) rotate(1deg)}}
+@keyframes eyeBlink{0%,44%,48%,100%{transform:scaleY(1)}46%{transform:scaleY(.08)}}
+@keyframes eyeLook{0%,100%{transform:translate(0,0)}35%{transform:translate(4px,1px)}70%{transform:translate(-3px,-1px)}}
+@keyframes mouthMove{0%,100%{height:20%;width:15%}50%{height:34%;width:20%}}
+@keyframes touchDrift{0%{transform:translate(-12px,0) rotate(-1deg)}100%{transform:translate(12px,-9px) rotate(1deg)}}
+@keyframes ringPulse{0%{transform:scale(.96);opacity:.7}100%{transform:scale(1.13);opacity:0}}
+#menzo-entry .blood-layer{position:absolute;inset:0;z-index:5;pointer-events:none;opacity:0}
+#menzo-entry.burst .blood-layer{opacity:1}
+#menzo-entry .blood{position:absolute;width:var(--s);height:var(--s);left:var(--x);top:var(--y);background:#a00012;border-radius:48% 52% 65% 35%;filter:drop-shadow(0 0 8px rgba(80,0,0,.4));transform:scale(0) rotate(var(--r));transform-origin:center}
+#menzo-entry.burst .blood{animation:bloodBurst .75s cubic-bezier(.12,.7,.2,1) forwards}
+#menzo-entry .blood:before,#menzo-entry .blood:after{content:"";position:absolute;background:inherit;border-radius:50%}
+#menzo-entry .blood:before{width:42%;height:42%;left:-22%;top:8%}
+#menzo-entry .blood:after{width:25%;height:25%;right:-15%;bottom:2%}
+@keyframes bloodBurst{0%{transform:scale(0) rotate(var(--r));opacity:0}45%{opacity:1}100%{transform:scale(1.35) rotate(var(--r));opacity:1}}
+#menzo-entry.burst:after{content:"";position:absolute;inset:0;z-index:4;background:radial-gradient(circle at 50% 50%,transparent 0 15%,rgba(125,0,12,.25) 45%,rgba(80,0,8,.88) 100%);animation:redWash .8s .15s forwards;pointer-events:none}
+@keyframes redWash{to{background:rgba(112,0,12,.88)}}
+@media(prefers-reduced-motion:reduce){#menzo-entry *{animation-duration:.01ms!important;animation-iteration-count:1!important}}
+</style>
+<noscript><style>#menzo-entry{display:none!important}body.entry-locked{overflow:auto!important}</style></noscript>
 </head>
 <body>
+<div id="menzo-entry" role="dialog" aria-label="Enter MENZO" aria-modal="true">
+  <div class="entry-brand" id="menzoEnter" role="button" tabindex="0" aria-label="Touch the MENZO emblem to enter">
+      <img src="menzo-logo.svg" alt="MENZO emblem">
+      <div class="ghost-face" aria-hidden="true">
+        <i class="ghost-eye left"></i><i class="ghost-eye right"></i><i class="ghost-mouth"></i>
+      </div>
+    </div>
+  <div class="entry-frame">
+    <div class="entry-kicker">MENZO BD · ENTER THE DARK</div>
+    <div class="entry-hint">TOUCH THE GHOST TO OPEN</div>
+  </div>
+  <div class="blood-layer" aria-hidden="true"></div>
+</div>
 <script>
 /* ============ SOLD OUT LIST ============
    Je product sold out, tar nam ekhane likho (website e jemon dekhay, exactly sei nam), quote er moddhe, comma diye.
@@ -1325,6 +1375,75 @@ ms.href=MESSENGER_USER?'https://m.me/'+MESSENGER_USER:'https://www.facebook.com/
 function msg(){const m=location.hash.match(/^#\/p\/(.+)$/),x=m&&by[m[1]];return x?`Hi MENZO BD, I'm interested in ${x.n}${x.d.sku?' ['+x.d.sku+']':''}`:'Hi MENZO BD, I want to know about your products'}
 wa.addEventListener('click',()=>{wa.href='https://wa.me/'+WA+'?text='+encodeURIComponent(msg())});
 wa.href='https://wa.me/'+WA;
+})();
+</script>
+<script>
+(function(){
+  // MENZO cinematic horror entry
+  document.body.classList.add('entry-locked');
+  const entryScreen = document.getElementById('menzo-entry');
+  const enterButton = document.getElementById('menzoEnter');
+  const bloodLayer = entryScreen.querySelector('.blood-layer');
+  // The emblem drifts around the screen like a ghost ball, in random directions.
+  let ballRun = true, bx = 0, by = 0, vx = 0, vy = 0, lastT = 0, wanderLeft = 0;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const speedRange = () => Math.max(window.innerWidth, window.innerHeight) * (0.16 + Math.random() * 0.12);
+  function newHeading(){
+    const ang = Math.random() * Math.PI * 2, sp = speedRange();
+    vx = Math.cos(ang) * sp; vy = Math.sin(ang) * sp;
+    wanderLeft = 0.7 + Math.random() * 1.3;
+  }
+  function placeBall(){
+    enterButton.style.transform = `translate3d(${bx.toFixed(1)}px, ${by.toFixed(1)}px, 0) rotate(${(vx / 90).toFixed(2)}deg)`;
+  }
+  function tickBall(t){
+    if(!ballRun) return;
+    const dt = Math.min((t - (lastT || t)) / 1000, 0.05); lastT = t;
+    const maxX = Math.max(0, entryScreen.clientWidth - enterButton.offsetWidth);
+    const maxY = Math.max(0, entryScreen.clientHeight - enterButton.offsetHeight);
+    wanderLeft -= dt;
+    if(wanderLeft <= 0) newHeading();
+    bx += vx * dt; by += vy * dt;
+    if(bx < 0){ bx = 0; vx = Math.abs(vx); wanderLeft = 0.3; }
+    if(bx > maxX){ bx = maxX; vx = -Math.abs(vx); wanderLeft = 0.3; }
+    if(by < 0){ by = 0; vy = Math.abs(vy); wanderLeft = 0.3; }
+    if(by > maxY){ by = maxY; vy = -Math.abs(vy); wanderLeft = 0.3; }
+    placeBall();
+    requestAnimationFrame(tickBall);
+  }
+  (function startBall(){
+    const maxX = Math.max(0, entryScreen.clientWidth - enterButton.offsetWidth);
+    const maxY = Math.max(0, entryScreen.clientHeight - enterButton.offsetHeight);
+    if(reduceMotion){ bx = maxX / 2; by = maxY / 2; vx = vy = 0; placeBall(); return; }
+    bx = Math.random() * maxX; by = Math.random() * maxY;
+    newHeading(); placeBall();
+    requestAnimationFrame(tickBall);
+  })();
+  function openMenzo(){
+    if(entryScreen.classList.contains('burst')) return;
+    ballRun = false;
+    const count = window.innerWidth < 600 ? 22 : 34;
+    for(let i=0;i<count;i++){
+      const drop=document.createElement('span');
+      drop.className='blood';
+      drop.style.setProperty('--x', `${Math.random()*100}%`);
+      drop.style.setProperty('--y', `${Math.random()*100}%`);
+      drop.style.setProperty('--s', `${18+Math.random()*105}px`);
+      drop.style.setProperty('--r', `${Math.random()*360}deg`);
+      drop.style.animationDelay=`${Math.random()*.22}s`;
+      bloodLayer.appendChild(drop);
+    }
+    entryScreen.classList.add('burst');
+    window.setTimeout(()=>{
+      entryScreen.classList.add('entry-gone');
+      document.body.classList.remove('entry-locked');
+      window.setTimeout(()=>entryScreen.remove(),800);
+    },1050);
+  }
+  enterButton.addEventListener('click', openMenzo);
+  enterButton.addEventListener('keydown', e => {
+    if(e.key==='Enter' || e.key===' '){ e.preventDefault(); openMenzo(); }
+  });
 })();
 </script>
 </body>
