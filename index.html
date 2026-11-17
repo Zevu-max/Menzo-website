@@ -546,6 +546,14 @@ body.entry-locked{overflow:hidden}
 @media(prefers-reduced-motion:reduce){#menzo-entry *{animation-duration:.01ms!important;animation-iteration-count:1!important}}
 </style>
 <noscript><style>#menzo-entry{display:none!important}body.entry-locked{overflow:auto!important}</style></noscript>
+<style>
+/* MENZO photo protection: soft watermark + no drag/long-press save */
+.mz-wm{position:relative}
+.mz-wm::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='110'%3E%3Ctext x='75' y='60' text-anchor='middle' transform='rotate(-28 75 58)' font-family='Georgia,serif' font-size='17' letter-spacing='4' fill='white' fill-opacity='0.24'%3EMENZO%3C/text%3E%3C/svg%3E") repeat}
+.mz-wm img,.mzsc img{-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
+.mz-wmwrap{overflow:hidden;border:1px solid var(--line);align-self:start;line-height:0}
+.mz-wmwrap img{width:100%;border:0}
+</style>
 </head>
 <body>
 <div id="menzo-entry" role="dialog" aria-label="Enter MENZO" aria-modal="true">
@@ -1462,6 +1470,23 @@ wa.href='https://wa.me/'+WA;
   enterButton.addEventListener('keydown', e => {
     if(e.key==='Enter' || e.key===' '){ e.preventDefault(); openMenzo(); }
   });
+})();
+</script>
+<script>
+/* MENZO photo protection: watermark overlay on photo containers, block image right-click and drag */
+(function(){
+  function mark(){document.querySelectorAll('.np-img,.story-visual,.gtile.has-img').forEach(function(e){e.classList.add('mz-wm')});}
+  function wrapDetail(){
+    document.querySelectorAll('.mzmain>img').forEach(function(img){
+      var w=document.createElement('div');w.className='mz-wm mz-wmwrap';
+      img.parentNode.insertBefore(w,img);w.appendChild(img);
+    });
+  }
+  mark();
+  var pg=document.getElementById('mzPg');
+  if(pg)new MutationObserver(wrapDetail).observe(pg,{childList:true});
+  document.addEventListener('contextmenu',function(e){if(e.target.tagName==='IMG')e.preventDefault();});
+  document.addEventListener('dragstart',function(e){if(e.target.tagName==='IMG')e.preventDefault();});
 })();
 </script>
 </body>
