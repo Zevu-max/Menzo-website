@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MENZO AI Assistant</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #080808;
+  color: white;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat {
+  width: 90%;
+  max-width: 420px;
+  background: #151515;
+  border: 1px solid #333;
+  border-radius: 18px;
+  padding: 25px;
+}
+
+h1 {
+  letter-spacing: 5px;
+  text-align: center;
+}
+
+p {
+  color: #aaa;
+  text-align: center;
+}
+
+input {
+  width: 100%;
+  padding: 15px;
+  margin-top: 20px;
+  background: #222;
+  border: 1px solid #444;
+  border-radius: 8px;
+  color: white;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 12px;
+  background: white;
+  color: black;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+#reply {
+  margin-top: 20px;
+  color: #ddd;
+  text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="chat">
+  <h1>MENZO</h1>
+  <p>AI Shopping Assistant</p>
+  <p>How can I help you today?</p>
+
+  <input id="question"
+  placeholder="Ask about men's accessories...">
+
+  <button onclick="askMenzo()">Send Message</button>
+
+  <div id="reply"></div>
+</div>
+
+<script>
+function askMenzo() {
+  const question =
+    document.getElementById("question").value.trim();
+
+  const reply = document.getElementById("reply");
+
+  if (!question) {
+    reply.textContent = "Please enter a question.";
+    return;
+  }
+
+  reply.textContent =
+    "Welcome to MENZO! AI shopping features coming soon.";
+}
+</script>
+
+</body>
+</html>
